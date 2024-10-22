@@ -39,7 +39,6 @@ class _SignInState extends State<SignIn> {
 
         // Access user data
         String fullName = userDoc['fullName'];
-        String email = userDoc['email'];
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Welcome back, $fullName!')),

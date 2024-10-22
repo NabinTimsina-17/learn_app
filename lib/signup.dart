@@ -47,23 +47,30 @@ try {
   String uid = userCredential.user!.uid;
 
   // Store user information in Firestore
-  await FirebaseFirestore.instance.collection('users').doc(uid).set({
-    'fullName': _fullNameController.text,
-    'email': _emailController.text,
-    'uid': uid,
-    'createdAt': DateTime.now(),
-  });
-
+  // await FirebaseFirestore.instance.collection('user').doc(uid).set({
+  //   'displayName': _fullNameController.text,
+  //   'email': _emailController.text,
+  // }).then((result){
   // Show success message
+  if(uid.isNotEmpty){
+    await FirebaseFirestore.instance.collection('user').doc(uid).set({
+    'displayName': _fullNameController.text,
+    'email': _emailController.text,
+  });
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(content: Text('Sign Up Successful')),
   );
+  }
+
+  // });
+
+
 
   // Ensure the context is valid before navigating
   if (mounted) {
     // Navigate to the SignIn page
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const SignIn()),
+      MaterialPageRoute(builder: (context) =>  const SignIn()),
     );
   }
 } catch (e) {
@@ -79,7 +86,7 @@ try {
       errorMessage = 'Failed to sign up: ${e.message}';
     }
   } else {
-    errorMessage = 'An unknown error occurred.';
+    errorMessage = 'An unknown error occurred.$e';
   }
 
   // Show error message
