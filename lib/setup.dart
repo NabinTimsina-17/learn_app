@@ -10,6 +10,6 @@ class SetUp extends StatefulWidget {
 class _SetUpState extends State<SetUp> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold();
   }
 }
