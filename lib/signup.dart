@@ -35,59 +35,48 @@ class _SignUpState extends State<SignUp> {
         return;
       }
 
-// Inside _signUp function after successful Firestore data saving
-try {
-  // Sign up user
-  UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: _emailController.text,
-    password: _passwordController.text,
-  );
+      try {
+        // Create a new user with Firebase Authentication
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
 
-  // Get the user Id
-  String uid = userCredential.user!.uid;
+        String uid = userCredential.user!.uid;
 
-  // Store user information in Firestore
-  await FirebaseFirestore.instance.collection('users').doc(uid).set({
-    'fullName': _fullNameController.text,
-    'email': _emailController.text,
-    'uid': uid,
-    'createdAt': DateTime.now(),
-  });
+        // Store user information in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'displayName': _fullNameController.text,
+          'email': _emailController.text,
+        });
 
-  // Show success message
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Sign Up Successful')),
-  );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign Up Successful')),
+        );
 
-  // Ensure the context is valid before navigating
-  if (mounted) {
-    // Navigate to the SignIn page
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const SignIn()),
-    );
-  }
-} catch (e) {
-  String errorMessage;
-  if (e is FirebaseAuthException) {
-    if (e.code == 'weak-password') {
-      errorMessage = 'The password provided is too weak.';
-    } else if (e.code == 'email-already-in-use') {
-      errorMessage = 'The account already exists for that email.';
-    } else if (e.code == 'invalid-email') {
-      errorMessage = 'The email address is not valid.';
-    } else {
-      errorMessage = 'Failed to sign up: ${e.message}';
-    }
-  } else {
-    errorMessage = 'An unknown error occurred.';
-  }
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const SignIn()),
+          );
+        }
+      } catch (e) {
+        String errorMessage;
+        if (e is FirebaseAuthException) {
+          if (e.code == 'weak-password') {
+            errorMessage = 'The password provided is too weak.';
+          } else if (e.code == 'email-already-in-use') {
+            errorMessage = 'The account already exists for that email.';
+          } else {
+            errorMessage = 'Failed to sign up: ${e.message}';
+          }
+        } else {
+          errorMessage = 'An unknown error occurred.';
+        }
 
-  // Show error message
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(errorMessage)),
-  );
-}
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
 
@@ -123,7 +112,6 @@ try {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  // Add simple email validation
                   if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                     return 'Please enter a valid email address';
                   }
@@ -189,5 +177,4 @@ try {
       ),
     );
   }
-
 }
